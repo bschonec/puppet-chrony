@@ -8,7 +8,7 @@ class chrony::config {
     ensure  => file,
     owner   => 0,
     group   => 0,
-    mode    => '0644',
+    mode    => $chrony::config_mode,
     content => epp($chrony::config_template,
       {
         servers => chrony::server_array_to_hash($chrony::servers, ['iburst']),
@@ -18,13 +18,7 @@ class chrony::config {
     ),
   }
 
-  if $chrony::chrony_password =~ Sensitive {
-    # unwrap before Puppet 6.24 can only be called on Sensitive values
-    $chrony_password = $chrony::chrony_password.unwrap
-  } else {
-    $chrony_password = $chrony::chrony_password
-  }
-
+  $chrony_password = $chrony::chrony_password.unwrap
   $keys_params = {
     'chrony_password' => $chrony_password,
     'commandkey' => $chrony::commandkey,

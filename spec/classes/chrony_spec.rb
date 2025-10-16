@@ -9,7 +9,7 @@ describe 'chrony' do
         facts
       end
       let(:config_file) do
-        case facts[:osfamily]
+        case facts[:os]['family']
         when 'Archlinux', 'RedHat', 'Suse'
           '/etc/chrony.conf'
         else
@@ -17,7 +17,7 @@ describe 'chrony' do
         end
       end
       let(:keys_file) do
-        case facts[:osfamily]
+        case facts[:os]['family']
         when 'Archlinux', 'RedHat', 'Suse'
           '/etc/chrony.keys'
         else
@@ -118,14 +118,19 @@ describe 'chrony' do
             ['0.pool.ntp.org', '1.pool.ntp.org', '2.pool.ntp.org', '3.pool.ntp.org'].each do |s|
               it { is_expected.to contain_file(config_file).with_content(%r{^\s*server #{s} iburst$}) }
             end
-            it { is_expected.to contain_file(config_file).with_content(%r{^\s*driftfile /var/lib/chrony/drift$}) }
+            it { is_expected.to contain_file(config_file).with_content(%r{^\s*driftfile /var/lib/chrony/chrony.drift$}) }
             it { is_expected.to contain_file(config_file).with_content(%r{^\s*rtcsync$}) }
+            it { is_expected.to contain_file(config_file).with_content(%r{^\s*leapsectz right/UTC$}) }
+            it { is_expected.to contain_file(config_file).with_content(%r{^\s*makestep 1 3$}) }
+            it { is_expected.to contain_file(config_file).with_content(%r{^\s*maxupdateskew 100.0$}) }
+
+            it { is_expected.to contain_file(config_file).with_content(%r{^\s*ntsdumpdir /var/lib/chrony$}) } unless facts[:os]['distro']['codename'] == 'focal'
             it { is_expected.to contain_file(config_file).without_content(%r{^\s*dumpdir}) }
             it { is_expected.to contain_file(config_file).without_content(%r{^\s*ntpsigndsocket}) }
             it { is_expected.to contain_file(config_file).without_content(%r{^\s*\n\s*$}) }
             it { is_expected.to contain_file(keys_file).with_mode('0640') }
             it { is_expected.to contain_file(keys_file).with_owner('0') }
-            it { is_expected.to contain_file(keys_file).with_group('0') }
+            it { is_expected.to contain_file(keys_file).with_group('_chrony') }
             it { is_expected.to contain_file(keys_file).with_replace(true) }
             it { is_expected.to contain_file(keys_file).with_content(sensitive("0 xyzzy\n")) }
           end
@@ -536,6 +541,27 @@ describe 'chrony' do
         end
 
         it { is_expected.not_to contain_file(config_file).with_content(%r{^\s*local stratum}) }
+      end
+
+      context 'local orphan default' do
+        let(:params) do
+          {
+            local_stratum: 10
+          }
+        end
+
+        it { is_expected.to contain_file(config_file).with_content(%r{^\s*local stratum 10$\s*$}) }
+      end
+
+      context 'local orphan enabled' do
+        let(:params) do
+          {
+            local_stratum: 10,
+            local_orphan: true
+          }
+        end
+
+        it { is_expected.to contain_file(config_file).with_content(%r{^\s*local stratum 10 orphan$\s*$}) }
       end
 
       context 'with sub-millisecond value for logchange' do

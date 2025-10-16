@@ -60,9 +60,9 @@
 # @param initstepslew
 #   Allow chronyd to make a rapid measurement of the system clock error at boot time,
 #   and to correct the system clock by stepping before normal operation begins.
-# @param sourcedir
-#   The confdir directive includes configuration files with the .conf suffix from a directory.
 # @param confdir
+#   The confdir directive includes configuration files with the .conf suffix from a directory.
+# @param sourcedir
 #   The sourcedir directive is identical to the confdir directive, except the configuration files have the .sources suffix, they can only specify NTP sources.
 # @param cmdacl
 #   An array of ACLs for monitoring access. This expects a list of directives, for
@@ -81,6 +81,8 @@
 #   'unset' then no password will be added to the keys file by puppet.
 # @param config
 #   This sets the file to write chrony configuration into.
+# @param config_mode
+#   Specify unix mode of chrony configuration file, defaults to 0644.
 # @param config_template
 #   This determines which template puppet should use for the chrony configuration.
 # @param config_keys
@@ -103,6 +105,9 @@
 #   Override the stratum of the server which will be reported to clients
 #   when the local reference is active. Use `false` to not set local_stratum in
 #   chrony configuration.
+# @param local_orphan
+#   Put the server in 'orphan' mode when the local reference is active. Does
+#   nothing if local_stratum is not set.
 # @param ntpsigndsocket
 #   This sets the location of the Samba ntp_signd socket when it is running as a Domain Controller (DC).
 # @param stratumweight
@@ -145,15 +150,16 @@
 # @param minsamples
 #   Specifies the minimum number of readings kept for tracking of the NIC clock.
 # @param refclocks
-#   This should be a Hash of hardware reference clock drivers to use.  They hash
-#   can either list a single list of options for the driver, or any array of
-#   multiple options if the same driver is used for multiple hardware clocks.
+#   List of `refclock` directives to be added to the chrony configuration file.
+#   Each element of the list should be a string which completes the `refclock` `chrony.conf` directive.
 #
 #   Example:
 #   ```puppet
-#   refclocks => { 'PPS' => [ '/dev/pps0 lock NMEA refid GPS',
-#                            '/dev/pps1:clear refid GPS2' ],
-#                  'SHM' => '0 offset 0.5 delay 0.2 refid NMEA noselect' }
+#   refclocks => [
+#     'PPS /dev/pps0 lock NMEA refid GPS',
+#     'SHM 0 offset 0.5 delay 0.2 refid NMEA noselect',
+#     'PPS /dev/pps1:clear refid GPS2',
+#   ],
 #   ```
 # @param makestep_seconds
 #   Configures the [`makestep`](https://chrony.tuxfamily.org/doc/3.4/chrony.conf.html#makestep) `threshold`.
@@ -255,6 +261,7 @@ class chrony (
   Optional[Stdlib::Port] $cmdport                                  = undef,
   NotUndef $commandkey                                             = 0,
   Stdlib::Unixpath $config                                         = '/etc/chrony/chrony.conf',
+  Stdlib::Filemode $config_mode                                    = '0644',
   Optional[Stdlib::Absolutepath] $confdir                          = undef,
   Optional[Stdlib::Absolutepath] $sourcedir                        = undef,
   String[1] $config_template                                       = 'chrony/chrony.conf.epp',
@@ -268,6 +275,7 @@ class chrony (
   Array[String[1]] $keys                                           = [],
   Stdlib::Unixpath $driftfile                                      = '/var/lib/chrony/drift',
   Variant[Boolean[false],Integer[1,15]] $local_stratum             = 10,
+  Boolean $local_orphan                                            = false,
   Float $logchange                                                 = 0.5,
   Optional[String[1]] $log_options                                 = undef,
   Optional[Integer[0]] $logbanner                                  = undef,

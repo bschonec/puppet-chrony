@@ -1,7 +1,7 @@
 # puppet-chrony
 
 [![License](https://img.shields.io/github/license/voxpupuli/puppet-chrony.svg)](https://github.com/voxpupuli/puppet-chrony/blob/master/LICENSE)
-[![Build Status](https://secure.travis-ci.org/voxpupuli/puppet-chrony.png?branch=master)](http://travis-ci.org/voxpupuli/puppet-chrony)
+[![Build Status](https://github.com/voxpupuli/puppet-chrony/actions/workflows/ci.yml/badge.svg)](https://github.com/voxpupuli/puppet-chrony/actions/workflows/ci.yml)
 [![Puppet Forge](https://img.shields.io/puppetforge/v/puppet/chrony.svg?style=flat)](https://forge.puppetlabs.com/puppet/chrony)
 [![Puppet Forge - downloads](https://img.shields.io/puppetforge/dt/puppet/chrony.svg?style=flat)](https://forge.puppetlabs.com/puppet/chrony)
 [![Puppet Forge - scores](https://img.shields.io/puppetforge/f/puppet/chrony.svg?style=flat)](https://forge.puppetlabs.com/puppet/chrony)
@@ -123,6 +123,7 @@ class { 'chrony':
 ```
 
 ### Enable chrony-wait.service
+
 RedHat and Suse provide a default disabled `chrony-wait.service` to block the `time-sync.target`
 until node is synchronised.
 
@@ -143,16 +144,7 @@ available in [REFERENCE.md](REFERENCE.md)
 
 ## Limitations
 
-This module has been built on and tested against Puppet 5.5 and higher.
-
-The module has been tested on:
-
-- Arch Linux
-- Red Hat
-- Debian 9, 10
-- Ubuntu 18.04, 20.04
-- Suse 12.3
-- Gentoo 2.7
+See `metadata.json` for supported and tested operating systems.
 
 ## Copyright and License
 

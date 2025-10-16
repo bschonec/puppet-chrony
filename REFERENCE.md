@@ -129,13 +129,14 @@ The following parameters are available in the `chrony` class:
 * [`bindaddress`](#-chrony--bindaddress)
 * [`bindcmdaddress`](#-chrony--bindcmdaddress)
 * [`initstepslew`](#-chrony--initstepslew)
-* [`sourcedir`](#-chrony--sourcedir)
 * [`confdir`](#-chrony--confdir)
+* [`sourcedir`](#-chrony--sourcedir)
 * [`cmdacl`](#-chrony--cmdacl)
 * [`cmdport`](#-chrony--cmdport)
 * [`commandkey`](#-chrony--commandkey)
 * [`chrony_password`](#-chrony--chrony_password)
 * [`config`](#-chrony--config)
+* [`config_mode`](#-chrony--config_mode)
 * [`config_template`](#-chrony--config_template)
 * [`config_keys`](#-chrony--config_keys)
 * [`config_keys_manage`](#-chrony--config_keys_manage)
@@ -146,6 +147,7 @@ The following parameters are available in the `chrony` class:
 * [`keys`](#-chrony--keys)
 * [`driftfile`](#-chrony--driftfile)
 * [`local_stratum`](#-chrony--local_stratum)
+* [`local_orphan`](#-chrony--local_orphan)
 * [`ntpsigndsocket`](#-chrony--ntpsigndsocket)
 * [`stratumweight`](#-chrony--stratumweight)
 * [`log_options`](#-chrony--log_options)
@@ -226,7 +228,7 @@ and to correct the system clock by stepping before normal operation begins.
 
 Default value: `undef`
 
-##### <a name="-chrony--sourcedir"></a>`sourcedir`
+##### <a name="-chrony--confdir"></a>`confdir`
 
 Data type: `Optional[Stdlib::Absolutepath]`
 
@@ -234,7 +236,7 @@ The confdir directive includes configuration files with the .conf suffix from a 
 
 Default value: `undef`
 
-##### <a name="-chrony--confdir"></a>`confdir`
+##### <a name="-chrony--sourcedir"></a>`sourcedir`
 
 Data type: `Optional[Stdlib::Absolutepath]`
 
@@ -288,6 +290,14 @@ Data type: `Stdlib::Unixpath`
 This sets the file to write chrony configuration into.
 
 Default value: `'/etc/chrony/chrony.conf'`
+
+##### <a name="-chrony--config_mode"></a>`config_mode`
+
+Data type: `Stdlib::Filemode`
+
+Specify unix mode of chrony configuration file, defaults to 0644.
+
+Default value: `'0644'`
 
 ##### <a name="-chrony--config_template"></a>`config_template`
 
@@ -370,6 +380,15 @@ when the local reference is active. Use `false` to not set local_stratum in
 chrony configuration.
 
 Default value: `10`
+
+##### <a name="-chrony--local_orphan"></a>`local_orphan`
+
+Data type: `Boolean`
+
+Put the server in 'orphan' mode when the local reference is active. Does
+nothing if local_stratum is not set.
+
+Default value: `false`
 
 ##### <a name="-chrony--ntpsigndsocket"></a>`ntpsigndsocket`
 
@@ -509,15 +528,16 @@ Default value: `undef`
 
 Data type: `Array`
 
-This should be a Hash of hardware reference clock drivers to use.  They hash
-can either list a single list of options for the driver, or any array of
-multiple options if the same driver is used for multiple hardware clocks.
+List of `refclock` directives to be added to the chrony configuration file.
+Each element of the list should be a string which completes the `refclock` `chrony.conf` directive.
 
 Example:
 ```puppet
-refclocks => { 'PPS' => [ '/dev/pps0 lock NMEA refid GPS',
-                         '/dev/pps1:clear refid GPS2' ],
-               'SHM' => '0 offset 0.5 delay 0.2 refid NMEA noselect' }
+refclocks => [
+  'PPS /dev/pps0 lock NMEA refid GPS',
+  'SHM 0 offset 0.5 delay 0.2 refid NMEA noselect',
+  'PPS /dev/pps1:clear refid GPS2',
+],
 ```
 
 Default value: `[]`
