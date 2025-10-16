@@ -251,6 +251,10 @@
 #   Directory to store measurement history in on exit.
 # @param maxupdateskew
 #   Sets the threshold for determining whether an estimate might be so unreliable that it should not be used
+# @param options_file
+#   The full path to the chronyd options file.
+# @param options
+#   Options to pass to the chrony daemon via /etc/sysconfig/chronyd file.
 # @param acquisitionport
 #   Sets the acquisitionport for client queries
 class chrony (
@@ -333,6 +337,9 @@ class chrony (
   Optional[Stdlib::Absolutepath]  $ntsdumpdir                      = undef,
   Optional[String]  $ntsntpserver                                  = undef,
   Optional[Integer[0]] $ntsrotate                                  = undef,
+  Optional[Stdlib::Absolutepath] $options_file                     = '/etc/sysconfig/chronyd',
+  Optional[String] $options                                        = undef,
+  String[1] $options_template                                      = 'chrony/chronyd.epp',
   Optional[Integer[1,65535]] $acquisitionport                      = undef,
 ) {
   if ! $config_keys_manage and $chrony_password != 'unset' {
