@@ -200,7 +200,10 @@ The following parameters are available in the `chrony` class:
 * [`hwtimestamps`](#-chrony--hwtimestamps)
 * [`dumpdir`](#-chrony--dumpdir)
 * [`maxupdateskew`](#-chrony--maxupdateskew)
+* [`options_file`](#-chrony--options_file)
+* [`options`](#-chrony--options)
 * [`acquisitionport`](#-chrony--acquisitionport)
+* [`options_template`](#-chrony--options_template)
 
 ##### <a name="-chrony--bindaddress"></a>`bindaddress`
 
@@ -426,7 +429,7 @@ Default value: `undef`
 
 ##### <a name="-chrony--logchange"></a>`logchange`
 
-Data type: `Float`
+Data type: `Float[0.1]`
 
 Sets the threshold for the adjustment of the system clock that will generate a syslog message.
 Clock errors detected via NTP packets, reference clocks, or timestamps entered via the settime
@@ -566,7 +569,7 @@ Default value: `3`
 
 ##### <a name="-chrony--queryhosts"></a>`queryhosts`
 
-Data type: `Array[String[0]]`
+Data type: `Array[String[1]]`
 
 This adds the networks, hosts that are allowed to query the daemon.
 
@@ -574,7 +577,7 @@ Default value: `[]`
 
 ##### <a name="-chrony--denyqueryhosts"></a>`denyqueryhosts`
 
-Data type: `Array[String[0]]`
+Data type: `Array[String[1]]`
 
 Similar to queryhosts, except that it denies NTP client access to a particular subnet or host,
 rather than allowing it.
@@ -854,6 +857,22 @@ Sets the threshold for determining whether an estimate might be so unreliable th
 
 Default value: `undef`
 
+##### <a name="-chrony--options_file"></a>`options_file`
+
+Data type: `Optional[Stdlib::Absolutepath]`
+
+The full path to the chronyd options file.
+
+Default value: `'/etc/sysconfig/chronyd'`
+
+##### <a name="-chrony--options"></a>`options`
+
+Data type: `Optional[String]`
+
+Options to pass to the chrony daemon via /etc/sysconfig/chronyd file.
+
+Default value: `undef`
+
 ##### <a name="-chrony--acquisitionport"></a>`acquisitionport`
 
 Data type: `Optional[Integer[1,65535]]`
@@ -861,6 +880,14 @@ Data type: `Optional[Integer[1,65535]]`
 Sets the acquisitionport for client queries
 
 Default value: `undef`
+
+##### <a name="-chrony--options_template"></a>`options_template`
+
+Data type: `String[1]`
+
+
+
+Default value: `'chrony/chronyd.epp'`
 
 ## Data types
 
