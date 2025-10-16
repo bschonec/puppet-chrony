@@ -429,7 +429,7 @@ Default value: `undef`
 
 ##### <a name="-chrony--logchange"></a>`logchange`
 
-Data type: `Float[0.1]`
+Data type: `Float`
 
 Sets the threshold for the adjustment of the system clock that will generate a syslog message.
 Clock errors detected via NTP packets, reference clocks, or timestamps entered via the settime
@@ -569,7 +569,7 @@ Default value: `3`
 
 ##### <a name="-chrony--queryhosts"></a>`queryhosts`
 
-Data type: `Array[String[1]]`
+Data type: `Array[String[0]]`
 
 This adds the networks, hosts that are allowed to query the daemon.
 
@@ -577,7 +577,7 @@ Default value: `[]`
 
 ##### <a name="-chrony--denyqueryhosts"></a>`denyqueryhosts`
 
-Data type: `Array[String[1]]`
+Data type: `Array[String[0]]`
 
 Similar to queryhosts, except that it denies NTP client access to a particular subnet or host,
 rather than allowing it.
