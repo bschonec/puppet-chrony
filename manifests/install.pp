@@ -1,3 +1,4 @@
+
 # @summary Installs chrony
 #
 # @api private
